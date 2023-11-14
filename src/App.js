@@ -1,19 +1,23 @@
-import React from 'react'
-import { BrowserRouter as Router} from 'react-router-dom'
-import Rutas from './ruteo/Rutas'
-import BarraNavegacion from './ruteo/BarraNavegacion'
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom"
+import{ useAuth }from "./ruteo/AuthContext";
+import BarraRutasProtected from "./ruteo/BarraRutasProtected";
+import BarraRutasPublic from "./ruteo/BarraRutasPublic";
+
 
 const App = () => {
-  return (
-    <div style={{background:"violet"}}>
-      
-      <h1>App.js</h1>
-      <Router>
-        <BarraNavegacion />
-        <Rutas />
-      </Router>
+  const { user }= useAuth();
+  return(
+    <div> 
+    <h1>App.js</h1>
+    <Router>
+      {
+        user?<BarraRutasPublic/>:<BarraRutasProtected/>
+      }
+     
+     </Router>
     </div>
   )
 }
 
-export default App
+export default App;

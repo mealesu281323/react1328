@@ -1,58 +1,64 @@
-
 import { useState } from 'react';
 import AppForm from './components/AppForm';
 import logo from './logo.svg';
 //import './App.css';
-import C01componente from './components/C01componente';
-import { collection } from 'firebase/firestore';
+import C01componente from './pagina/C01componente';
+import { collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestore';
 import { db } from './components/firebase';
-import { deleteApp } from 'firebase/app';
+
+
 
 function App() {
- /// READ - LECTURA - fnRead /////
- const [docBD, setDocBD] = useState([]);
- const fnRead = () => {
- try {
-   const xColeccionConQuery =query (collection(db,'persona'));
-   const unsuscribete = onSnapshot(xColeccionConQuery, (xDatosBD) => {
-     const xdoc= [];
-     xDatosBD.forEach((doc) => {
-       xdoc.push({id:doc.id,...doc.data()});
-     });
- setDocBD(xdoc);
-   });
- } catch (error) {
- console.error(error);
-   }
- }
- fnRead(); //Prueba sin useEffect
- //useEffect( () =>{fnRead();}, []);
+  ///////////READ - LECTURA - FNREAD//////////
+  const[docBD, setDocBD] = useState([]);
+  const fnRead = () => {
+      try {
+        const xColeccionConQuery = query(collection(db, 'persona'));
+        const unsubcribe = onSnapshot(xColeccionConQuery, (xDatosBD) => {
+            const xDoc = [];
+            xDatosBD.forEach( (doc) => {
+             xDoc.push({id: doc.id, ...doc.data()});
+            });
+            setDocBD(xDoc);
+          
+          });   
+      } catch (error) {
+        console.error(error);
+        
+      }
+  
 
-//// DELETE - Eliminar - fnDelete ////
- const [idActual, setIdActual] = useState("");
- const fnDelete = (xId) => {
+  }
 
- }
-   return (
-   <div style={{width:"350px", background:"greenyellow",padding:"10px"}}>
-     <h1>sitiocopia2a3 (App.js)</h1>
-     <h3>READ  / DELETE</h3>
-     <AppForm {...{idActual, setIdActual, fnRead}}/>
-     {
-       docBD.map((p) =>
-       <p key={p.id}>
-         No. 1{p.nombre}...
-         <span onclick={() => fnDelete(p.id)}>x</span>
-         ...
-         <span onclick={() => fnDelete(p.id)}>x</span>
-       </p>
-     )
-   } 
+  fnRead();
+    ////////// DELETE - ELEMINAR - FNDELETE//////
+    const [idActual, setIdActual] = useState ("");
+    const fnDelete = async (xId) => {
+      if (window.confirm("Confirme para eliminar")) {
+        await deleteDoc(doc(db,'persona', xId));
+        console.log("se elimino con exito..."+xId);        
+      }
+    }
     
-    </div>
+
 
  
- );
-}
 
+  return (
+    <div style={{ width: "350px", background: "greenyellow", padding: "10px" }}>
+      <AppForm {...{ idActual, setIdActual, fnRead }} />
+      { 
+        docBD.map((p) =>
+          <p key={p.id}> 
+            No. {p.nombre}...
+            <span onClick={() => fnDelete(p.id)}>X</span>
+            .....
+            <span onClick={() => setIdActual(p.id)}>A</span>
+          </p>
+        )
+      }
+     
+    </div>
+  );
+}
 export default App;
